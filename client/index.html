@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>coba2</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+</head>
+
+<body>
+    <br>
+    <div class="container">
+        <input type="text" name="search" value="">
+        <br>
+        <button id="tweet">Twitter</button>
+        <ul class="collection">
+            <!-- isi API TWEET -->
+        </ul>
+        <input type="text" name="tweet" placeholder="isi tweet">
+        <button id="sendTweet" onclick="sendTweet()">Nge tweet</button>
+    </div>
+
+    <script>
+        function sendTweet() {
+            $.ajax({
+                url: 'http://localhost:3000/tweet',
+                type: 'POST',
+                data: {
+                    tweet: $("input[name='tweet']").val()
+                },
+                success: function(data) {
+                    data = JSON.parse(data)
+                    var domString = `<li class="collection-item"> ${data.text} </li>`
+                    $("ul").append(domString);
+                },
+                fail: function(err) {
+                    console.log(err);
+                }
+            })
+        }
+
+        $(document).ready(function() {
+            $("#tweet").click(function() {
+                $.ajax({
+                    url: "http://localhost:3000/search/" + $("input[name='search']").val() + "&count=2",
+                    // https://api.twitter.com/1.1/statuses/user_timeline.json?user_id=${req.params.parameter}&count=2
+                    type: "GET",
+                    success: function(data) {
+                        data = JSON.parse(data)
+                        console.log(data)
+                        $('ul').html('') // sama dengan kayak document.querySelector('ul').innerHTML = ''
+                        for (var i = 0; i < data.statuses.length; i++) {
+                            let table = `<li class="collection-item"> ${data.statuses[i].text} </li>`
+                            $("ul").append(table);
+                        }
+
+                    },
+                    fail: function(err) {
+                        //$("#results").append(html);
+                        console.log(err);
+                    },
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
